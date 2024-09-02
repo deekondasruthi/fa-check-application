@@ -1,0 +1,32 @@
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: fa-check-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: middleware_system
+      MYSQL_USER: koyembedu
+      MYSQL_PASSWORD: Admin@123
+    ports:
+      - "3304:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+  springboot-app:
+    image: fa-check-image
+    container_name: fa-check-container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/middleware_system?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: koyembedu
+      SPRING_DATASOURCE_PASSWORD: Admin@123
+    depends_on:
+      - mysql
+    ports:
+    - "8081:8081"
+    restart: always
+volumes:
+  mysql-data:
