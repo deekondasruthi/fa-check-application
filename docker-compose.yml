@@ -4,7 +4,7 @@ version: '3.8'
     image: fa-check-image
     container_name: fa-check-container
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://172.17.0.1:3306/middleware_system?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://curd-mysql-container:3306/middleware_system?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: koyembedu
       SPRING_DATASOURCE_PASSWORD: Admin@123
     ports:
