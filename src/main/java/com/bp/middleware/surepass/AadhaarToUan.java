@@ -96,6 +96,12 @@ public class AadhaarToUan {
 						.findByVerificationDocument(AppConstants.AADHAAR_TO_UAN);
 				VendorModel vendorModel = vendorRepository.findByVendorName(AppConstants.SUREPASS_VENDOR);
 			
+				
+			if(!verificationModel.isStatus() || !vendorModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, verificationModel,model);
+				}
+				
 				MerchantPriceModel merchantPriceModel = merchantPriceRepository
 						.getByVendorModelAndVendorVerificationModelAndEntityModelAndStatus(vendorModel, verificationModel,
 								userModel,true);

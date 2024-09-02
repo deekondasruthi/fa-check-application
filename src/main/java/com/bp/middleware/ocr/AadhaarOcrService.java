@@ -47,8 +47,7 @@ public class AadhaarOcrService {
 
 	private final String VERIFICATION_TYPE = AppConstants.AADHAAR_OCR;
 	private EntityModel ENTITY = null;
-	
-	
+
 	@Autowired
 	private ResponseRepository respRepository;
 	@Autowired
@@ -70,97 +69,103 @@ public class AadhaarOcrService {
 	@Autowired
 	private ErrorIdentifierService errorIdentifierService;
 	@Autowired
-	private  CommonResponseStructure commonResponseStructure;
+	private CommonResponseStructure commonResponseStructure;
 	@Autowired
 	private AadhaarOcrReplica aadhaarOcrReplica;
 	@Autowired
 	private GetPublicIpAndLocation ipAndLocation;
 
-	public ResponseStructure aadhaarOcr( MultipartFile file, HttpServletRequest servletRequest) {
+	public ResponseStructure aadhaarOcr(MultipartFile file, HttpServletRequest servletRequest) {
 
 		ResponseStructure structure = new ResponseStructure();
 		try {
 
 			RequestModel model = new RequestModel();
-			
+
 			String apiKey = servletRequest.getHeader("x-parse-rest-api-key");
 			String applicationId = servletRequest.getHeader("x-parse-application-id");
 
 			EntityModel userModel = userRepository.findByApiKeyAndApplicationId(apiKey, applicationId);
-			
+
 			if (userModel == null) {
 				userModel = userRepository.findByApiSandboxKeyAndApplicationId(apiKey, applicationId);
 			}
 
-			if (userModel != null  && userModel.isAccountStatus()) {
-				
-				ENTITY=userModel;
-				
-				int fileFormatCheckFlag = smartRouteUtils.FileFormatCheck(file,userModel);
-				
+			if (userModel != null && userModel.isAccountStatus()) {
+
+				ENTITY = userModel;
+
+				int fileFormatCheckFlag = smartRouteUtils.FileFormatCheck(file, userModel);
+
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.AADHAAR_OCR);
-				
-				if(fileFormatCheckFlag == 2 || fileFormatCheckFlag == 3 ||fileFormatCheckFlag == 4) {
-					
-					return smartRouteUtils.fileFormatFailed(fileFormatCheckFlag,userModel,vendorVerifyModel);
+
+				if (fileFormatCheckFlag == 2 || fileFormatCheckFlag == 3 || fileFormatCheckFlag == 4) {
+
+					return smartRouteUtils.fileFormatFailed(fileFormatCheckFlag, userModel, vendorVerifyModel);
 				}
 
 				VendorModel vendorModel = vendorRepository.findByVendorName(AppConstants.SUREPASS_VENDOR);
 
+				if (!vendorVerifyModel.isStatus() || !vendorModel.isStatus()) {
+
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+
 				MerchantPriceModel merchantPriceModel = merchantPriceRepository
-						.getByVendorModelAndVendorVerificationModelAndEntityModelAndStatus(vendorModel, vendorVerifyModel,
-								userModel,true);
-				
+						.getByVendorModelAndVendorVerificationModelAndEntityModelAndStatus(vendorModel,
+								vendorVerifyModel, userModel, true);
+
 				VendorPriceModel vendorPriceModel = vendorPriceRepository
-						.getByVendorModelAndVendorVerificationModelAndStatus(vendorModel, vendorVerifyModel,true);
+						.getByVendorModelAndVendorVerificationModelAndStatus(vendorModel, vendorVerifyModel, true);
 
-				if (merchantPriceModel != null && vendorPriceModel!=null && merchantPriceModel.isAccepted()) {
+				if (merchantPriceModel != null && vendorPriceModel != null && merchantPriceModel.isAccepted()) {
 
-					if (userModel.getApiSandboxKey().equals(apiKey)  && userModel.getNoRestriction()==0) {
+					if (userModel.getApiSandboxKey().equals(apiKey) && userModel.getNoRestriction() == 0) {
 
-						return aadhaarOcrReplica.aadhaarOcrResponse(file, userModel,vendorVerifyModel);
-					
-					}else if(userModel.getNoRestriction()>0) {
-						
-						userModel.setNoRestriction(userModel.getNoRestriction()-1);
+						return aadhaarOcrReplica.aadhaarOcrResponse(file, userModel, vendorVerifyModel);
+
+					} else if (userModel.getNoRestriction() > 0) {
+
+						userModel.setNoRestriction(userModel.getNoRestriction() - 1);
 						model.setFreeHit(true);
 					}
 
-					ResponseStructure balanceCheck = smartRouteUtils.balanceCheckForOcr(userModel, merchantPriceModel,vendorVerifyModel);
+					ResponseStructure balanceCheck = smartRouteUtils.balanceCheckForOcr(userModel, merchantPriceModel,
+							vendorVerifyModel);
 
 					if (balanceCheck.getFlag() == 1) {
 
 						return aadhaarOcrVerification(userModel, vendorModel, vendorVerifyModel, merchantPriceModel,
-								file,model);
+								file, model);
 					}
 
 					return balanceCheck;
 
 				} else {
 
-					if(vendorPriceModel == null) {
-						return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
-					}else if(merchantPriceModel==null){
-						return smartRouteUtils.noAccessForThisVerification(userModel, vendorVerifyModel,model);
-					}else {
-						return smartRouteUtils.notAccepted(userModel, vendorVerifyModel,model);
+					if (vendorPriceModel == null) {
+						return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+					} else if (merchantPriceModel == null) {
+						return smartRouteUtils.noAccessForThisVerification(userModel, vendorVerifyModel, model);
+					} else {
+						return smartRouteUtils.notAccepted(userModel, vendorVerifyModel, model);
 					}
 				}
 
 			} else {
 
-				if(userModel == null) {
+				if (userModel == null) {
 					return smartRouteUtils.commonErrorResponse();
-				}else {
+				} else {
 					return smartRouteUtils.accountInactive(userModel);
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			
-			structure.setErrorReferenceId(errorIdentifierService.errorSaver(e, VERIFICATION_TYPE,ENTITY));
+
+			structure.setErrorReferenceId(errorIdentifierService.errorSaver(e, VERIFICATION_TYPE, ENTITY));
 			structure.setFileName(VERIFICATION_TYPE);
 			structure.setData(null);
 			structure.setMessage(AppConstants.ERROR_MESSAGE_RESPONSE);
@@ -172,15 +177,15 @@ public class AadhaarOcrService {
 	}
 
 	private ResponseStructure aadhaarOcrVerification(EntityModel entityModel, VendorModel vendorModel,
-			VendorVerificationModel vendorVerifyModel, MerchantPriceModel merchantPriceModel, MultipartFile file,RequestModel model)
-			throws Exception {
+			VendorVerificationModel vendorVerifyModel, MerchantPriceModel merchantPriceModel, MultipartFile file,
+			RequestModel model) throws Exception {
 
 		ResponseStructure structure = new ResponseStructure();
 
 		Request request = new Request();
 		Date reqDate = new Date();
 
-		String surepassResponse = ocrMechanisms.ocrMechanisms(entityModel,merchantPriceModel,file);
+		String surepassResponse = ocrMechanisms.ocrMechanisms(entityModel, merchantPriceModel, file);
 
 //		String surepassResponse = AppConstants.OCR_AADHAAR;
 
@@ -189,11 +194,11 @@ public class AadhaarOcrService {
 		System.err.println("resp : " + wholeData);
 
 		// VendorReq
-		vendorModel.setVendorRequest(vendorModel.getVendorRequest()+1);
+		vendorModel.setVendorRequest(vendorModel.getVendorRequest() + 1);
 		// VendorResponse
-		vendorModel.setVendorResponse(vendorModel.getVendorResponse()+1);
+		vendorModel.setVendorResponse(vendorModel.getVendorResponse() + 1);
 		// MonthlyCount
-		vendorModel.setMonthlyCount(vendorModel.getMonthlyCount()+1);
+		vendorModel.setMonthlyCount(vendorModel.getMonthlyCount() + 1);
 
 		vendorRepository.save(vendorModel);
 
@@ -201,8 +206,8 @@ public class AadhaarOcrService {
 		String statusCode = Integer.toString(statusCodeNumber);
 		boolean status = wholeData.getBoolean("success");
 
-		smartRouteUtils.errorCodes(statusCodeNumber, vendorModel,entityModel,vendorVerifyModel);
-		
+		smartRouteUtils.errorCodes(statusCodeNumber, vendorModel, entityModel, vendorVerifyModel);
+
 		String message = null;
 		if (status) {
 			message = wholeData.getString("message_code");
@@ -318,26 +323,26 @@ public class AadhaarOcrService {
 		respRepository.save(response);
 
 		// Prepaid Amount Reduction
-		if (entityModel.getPaymentMethod().getPaymentType().equalsIgnoreCase("Prepaid") && statusCodeNumber != 401 && statusCodeNumber != 403 && !model.isFreeHit()) {
+		if (entityModel.getPaymentMethod().getPaymentType().equalsIgnoreCase("Prepaid") && statusCodeNumber != 401
+				&& statusCodeNumber != 403 && !model.isFreeHit()) {
 
-			smartRouteUtils.deductAmountForOcr(entityModel,merchantPriceModel);
-			
-		}else if(statusCodeNumber != 401 && statusCodeNumber != 403 && !model.isFreeHit()) {
-			
+			smartRouteUtils.deductAmountForOcr(entityModel, merchantPriceModel);
+
+		} else if (statusCodeNumber != 401 && statusCodeNumber != 403 && !model.isFreeHit()) {
+
 			smartRouteUtils.postpaidConsumedAmountForOcr(entityModel, merchantPriceModel);
-			
-		}else {
-			
+
+		} else {
+
 			request.setConsider(false);
 			reqRepository.save(request);
 		}
-
 
 		String encryptedCommonResponse = PasswordUtils.demoEncryption(commonResponse, entityModel.getSecretKey());
 
 		Map<String, Object> mapNew = new HashMap<>();
 		mapNew.put("return_response", encryptedCommonResponse);
-		
+
 		userRepository.save(entityModel);
 
 		structure.setStatusCode(HttpStatus.OK.value());

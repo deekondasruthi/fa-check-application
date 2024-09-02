@@ -110,6 +110,11 @@ public class ItrOcrService {
 				
 				VendorModel vendorModel = vendorRepository.findByVendorName(AppConstants.SUREPASS_VENDOR);
 
+				if (!vendorVerifyModel.isStatus() || !vendorModel.isStatus()) {
+
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				MerchantPriceModel merchantPriceModel = merchantPriceRepository
 						.getByVendorModelAndVendorVerificationModelAndEntityModelAndStatus(vendorModel, vendorVerifyModel,
 								userModel,true);

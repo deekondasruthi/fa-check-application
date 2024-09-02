@@ -100,6 +100,11 @@ public class UdyamAadharMsmeVerification {
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.MSME_UDYAMAADHAR_VERIFY);
 
+				if(!vendorVerifyModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
+				}
+				
 				List<MerchantPriceModel> merchantPriceList = merchantPriceRepository
 						.findByEntityModelAndVendorVerificationModelAndStatus(userModel, vendorVerifyModel, true);
 				
@@ -290,20 +295,32 @@ public class UdyamAadharMsmeVerification {
 
 		if (balanceCheck.getFlag() == 1) {
 
-			if (merchantPriceModel.getVendorModel().getVendorId() == 1) {
+			if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SIGN_DESK_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SIGN DESK");
 				return signDeskMsmeVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
 						merchantPriceModel, vendorPrice);
 
-			} else if (merchantPriceModel.getVendorModel().getVendorId() == 2) {
+			} else if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SPRINT_VERIFY_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SPRINT V");
 
 				return sprintVerifyMsmeVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
 						merchantPriceModel, vendorPrice);
-			} else if (merchantPriceModel.getVendorModel().getVendorId() == 4) {
+			} else if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SUREPASS_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SUREPASS");
 
 				return surepassMsmeVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,

@@ -101,6 +101,11 @@ public class DrivingLicenseVerificationSignDesk {
 						.findByVerificationDocument(AppConstants.DL_VERIFY);
 				VendorModel vendorModel = vendorRepository.findByVendorName(AppConstants.SIGN_DESK_VENDOR);
 				
+			if(!verificationModel.isStatus() || !vendorModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, verificationModel,model);
+				}
+				
 				MerchantPriceModel merchantPriceModel = merchantPriceRepository
 						.getByVendorModelAndVendorVerificationModelAndEntityModelAndStatus(vendorModel, verificationModel,
 								userModel,true);

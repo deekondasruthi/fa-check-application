@@ -103,6 +103,11 @@ public class PanVerification {
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.PAN_VERIFY);
 
+				if(!vendorVerifyModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
+				}
+				
 				List<MerchantPriceModel> merchantPriceList = merchantPriceRepository
 						.findByEntityModelAndVendorVerificationModelAndStatus(userModel, vendorVerifyModel, true);
 				
@@ -297,20 +302,32 @@ public class PanVerification {
 
 		if (balanceCheck.getFlag() == 1) {
 
-			if (vendorModel.getVendorId() == 1) {
+			if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SIGN_DESK_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SIGN DESK");
 				return signDeskPanVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
 						merchantPriceModel, vendorPrice);
 
-			} else if (vendorModel.getVendorId() == 2) {
+			} else if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SPRINT_VERIFY_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SPRINT V");
 
 				return sprintVerifyPanVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
 						merchantPriceModel, vendorPrice);
-			} else if (vendorModel.getVendorId() == 4) {
+			} else if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SUREPASS_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SUREPASS");
 
 				return surepassPanVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,

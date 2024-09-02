@@ -98,6 +98,11 @@ public class PanImageVerification {
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.PAN_OCR_ADVANCED);
 				
+				if(!vendorVerifyModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
+				}
+				
 				VendorModel vendor = vendorRepository.findByVendorName(AppConstants.SIGN_DESK_VENDOR);
 
 				MerchantPriceModel merchantPriceModel = merchantPriceRepository

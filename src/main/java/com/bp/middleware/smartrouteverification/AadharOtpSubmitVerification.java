@@ -96,6 +96,11 @@ public class AadharOtpSubmitVerification {
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.AADHAR_OTP_VERIFY);
 
+				if(!vendorVerifyModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
+				}
+				
 				String userDecryption = PasswordUtils.demoDecrypt(model.getEncrypted_data(), userModel.getSecretKey());
 				JSONObject userJson = new JSONObject(userDecryption);
 
@@ -150,17 +155,29 @@ public class AadharOtpSubmitVerification {
 						// Balance Checked
 						if (vendorModel.getVendorName().equalsIgnoreCase("SIGN DESK")) {
 
+							if(!vendorModel.isStatus()) {
+								smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+							}
+							
 							System.err.println("SIGN DESK------");
 							return signDeskAadharOtpSubmit(userModel, userJson, vendorModel, vendorVerifyModel,
 									merchantPriceModel, responseModel, requestModel, model);
 
 						} else if (vendorModel.getVendorName().equalsIgnoreCase("SPRINT VERIFY")) {
 
+							if(!vendorModel.isStatus()) {
+								smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+							}
+							
 							System.err.println("SPRINT V------");
 							return sprintVerifyAadharOtpSubmit(userModel, userJson, vendorModel, vendorVerifyModel,
 									merchantPriceModel, responseModel, requestModel, model);
 						} else if (vendorModel.getVendorName().equalsIgnoreCase("SUREPASS")) {
 
+							if(!vendorModel.isStatus()) {
+								smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+							}
+							
 							System.err.println("SUREPASS------");
 							return surepassAadharOtpSubmit(userModel, userJson, vendorModel, vendorVerifyModel,
 									merchantPriceModel, responseModel, requestModel, model);

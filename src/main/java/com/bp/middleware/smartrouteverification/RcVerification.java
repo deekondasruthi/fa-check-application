@@ -100,6 +100,11 @@ public class RcVerification {
 				VendorVerificationModel vendorVerifyModel = vendorVerificationRepository
 						.findByVerificationDocument(AppConstants.RC_VERIFY);
 
+				if(!vendorVerifyModel.isStatus()) {
+					
+					return smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel,model);
+				}
+				
 				List<MerchantPriceModel> merchantPriceList = merchantPriceRepository
 						.findByEntityModelAndVendorVerificationModelAndStatus(userModel, vendorVerifyModel, true);
 				
@@ -293,23 +298,35 @@ public class RcVerification {
 
 		if (balanceCheck.getFlag() == 1) {
 
-//			if (merchantPriceModel.getVendorModel().getVendorId() == 1) {
-//
-//				System.err.println("SIGN DESK");
-//				return signDeskRcVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
-//						merchantPriceModel, vendorPrice);
-//
-//			} 
-			
-			if (merchantPriceModel.getVendorModel().getVendorId() == 2) {
+		/*	if (merchantPriceModel.getVendorModel().getVendorId() == 1) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+
+				System.err.println("SIGN DESK");
+				return signDeskRcVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
+						merchantPriceModel, vendorPrice);
+
+			} */
+			
+			if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SPRINT_VERIFY_VENDOR)) {
+
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SPRINT V");
 
 				return sprintVerifyRcVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
 						merchantPriceModel, vendorPrice);
 			} 
-			else if (merchantPriceModel.getVendorModel().getVendorId() == 4) {
+			else if (vendorModel.getVendorName().equalsIgnoreCase(AppConstants.SUREPASS_VENDOR)) {
 
+				if(!vendorModel.isStatus()) {
+					smartRouteUtils.verificationCurrentlyNotAvailable(userModel, vendorVerifyModel, model);
+				}
+				
 				System.err.println("SUREPASS");
 
 				return surepassRcVerification(userJson, model, userModel, vendorVerifyModel, vendorModel,
