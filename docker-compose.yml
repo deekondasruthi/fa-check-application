@@ -9,8 +9,6 @@ version: '3.8'
       SPRING_DATASOURCE_PASSWORD: Admin@123
     ports:
       - "8081:8081"
-    depends_on:
-      - mysql
     restart: always
 
 volumes:
