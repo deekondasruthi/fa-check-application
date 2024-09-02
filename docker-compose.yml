@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    container_name: curd-mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: middleware_system
@@ -19,7 +19,7 @@ services:
     image: fa-check-image
     container_name: fa-check-container
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/middleware_system
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/middleware_system?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: koyembedu
       SPRING_DATASOURCE_PASSWORD: Admin@123
     ports:
