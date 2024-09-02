@@ -3,14 +3,14 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: curd-mysql-container
+    container_name: Fa-check-mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: middleware_system
       MYSQL_USER: koyembedu
       MYSQL_PASSWORD: Admin@123
     ports:
-      - "3305:3306"
+      - "3304:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     restart: always
