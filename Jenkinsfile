@@ -32,7 +32,8 @@ pipeline {
         stage('Build Docker-Compose File') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml up -d'
+                    sh 'docker-compose down'
+                    sh 'docker-compose up --build'
                 }
             }
         }
