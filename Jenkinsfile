@@ -16,8 +16,6 @@ pipeline {
         stage('Docker Cleanup') {
             steps {
                 script {
-                    sh 'docker stop curd-mysql-container || true'
-                    sh 'docker rm curd-mysql-container || true'
                     sh 'docker image prune -a -f'
                 }
             }
