@@ -91,6 +91,7 @@ pipeline {
         }
         failure {
             emailext(
+                attachLog: true ,
                 to: "sruthi.d@basispay.in",
                 subject: "Build Failed: ${JOB_NAME} #${BUILD_NUMBER}",
                 body: """
