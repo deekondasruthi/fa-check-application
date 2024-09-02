@@ -12,7 +12,7 @@
 	<groupId>com.middleware</groupId>
 	<artifactId>middleware_system</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>middleware_system</name>
 	<description>eKYC Verification Middleware System</description>
 	<properties>
