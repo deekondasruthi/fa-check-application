@@ -10,7 +10,7 @@ services:
       MYSQL_USER: koyembedu
       MYSQL_PASSWORD: Admin@123
     ports:
-      - "3305:3306"
+      - "3304:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     restart: always
