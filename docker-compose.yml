@@ -3,7 +3,7 @@ version: '3.8'
 services:
   fa-check-mysql:
     image: mysql:8.0
-    container_name: curd-mysql-container
+    container_name: fa-check-mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: middleware_system
