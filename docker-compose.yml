@@ -3,7 +3,7 @@ version: '3.8'
 services:
   fa-check-mysql:
     image: mysql:8.0
-    container_name: mysql-container
+    container_name: curd-mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: middleware_system
@@ -13,6 +13,7 @@ services:
       - "3304:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d  # Mount the init-db directory
     restart: always
 
   springboot-app:
