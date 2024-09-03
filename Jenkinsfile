@@ -24,7 +24,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t fa-check-image .'
+                    sh 'docker-compose down'
+                    sh 'docker-compose up'
                 }
             }
         }
