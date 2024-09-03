@@ -17,7 +17,7 @@ pipeline {
             steps {
                 script {
                     sh 'docker-compose down'
-                    sh 'docker image prune -a -f'
+                    sh 'docker rmi -f fa-check-image'
                 }
             }
         }
