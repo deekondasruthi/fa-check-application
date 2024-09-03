@@ -33,7 +33,7 @@ pipeline {
         stage('Docker run containers') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose up -d'
+                    sh 'docker-compose -f docker-compose.yml up -d'
                 }
             }
         }
