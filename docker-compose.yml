@@ -3,6 +3,7 @@ version: '3.8'
   springboot-app:
     image: fa-check-image
     container_name: fa-check-container
+    tty: true
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://curd-mysql-container:3306/middleware_system?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: koyembedu
