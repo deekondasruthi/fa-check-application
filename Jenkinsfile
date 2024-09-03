@@ -16,8 +16,7 @@ pipeline {
         stage('Docker Cleanup') {
             steps {
                 script {
-                    sh 'docker stop fa-check-container fa-check-mysql-container || true'
-                    sh 'docker rm fa-check-container fa-check-mysql-container || true'
+                    sh 'docker-compose down'
                     sh 'docker image prune -a -f'
                 }
             }
@@ -30,11 +29,11 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Docker-Compose File') {
+        
+        stage('Docker run containers') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml up -d'
+                    sh 'docker-compose -f docker-compose up -d'
                 }
             }
         }
