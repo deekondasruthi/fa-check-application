@@ -16,7 +16,7 @@ services:
       - ./mysql-init:/docker-entrypoint-initdb.d
     restart: always
 
-  springboot-app1:
+  curd-application:
     image: curd-application-image
     container_name: curd-application-container
     environment:
@@ -29,7 +29,7 @@ services:
       - "8085:8080"
     restart: always
 
-  springboot-app2:
+  fa-check-application:
     image: fa-check-image
     container_name: fa-check-container
     environment:
