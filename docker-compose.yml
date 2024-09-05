@@ -3,10 +3,10 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.0
-    container_name: curd-mysql-container
+    container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: curd 
+      MYSQL_DATABASE: middleware_system
       MYSQL_USER: koyembedu
       MYSQL_PASSWORD: Admin@123
     ports:
@@ -14,19 +14,6 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d
-    restart: always
-
-  curd-application:
-    image: curd-application-image
-    container_name: curd-application-container
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/curd?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: koyembedu
-      SPRING_DATASOURCE_PASSWORD: Admin@123
-    depends_on:
-      - mysql
-    ports:
-      - "8085:8080"
     restart: always
 
   fa-check-application:
